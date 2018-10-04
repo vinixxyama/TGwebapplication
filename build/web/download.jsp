@@ -29,7 +29,6 @@
             String myDataField = null;
             String datainicial = request.getParameter("data_inicial");
             String datafinal = request.getParameter("data_final");
-            //String todoperiodo = request.getParameter("allperiodobox");
             String myQuery = "";
             String[] aux1 = request.getParameterValues("cotacaobox");
             ArrayList<String> cotacao = new ArrayList<String>();

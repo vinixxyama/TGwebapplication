@@ -4,6 +4,7 @@
     Author     : vinicius
 --%>
 
+<%@page import="java.net.URI"%>
 <%@ page contentType="text/html; charset=iso-8859-1" pageEncoding="UTF-8" language="java" import="java.sql.* " %>
 <%@ page import="java.io.*"
          import="java.util.ArrayList"%>
@@ -17,13 +18,18 @@
         <%
             String filename = "produto.csv";
             String driver = "org.postgresql.Driver";
-            String url = "jdbc:postgresql://localhost:5432/tg";
-            String username = "postgres";
-            String password = "vini930716";
+            //String url = "jdbc:postgresql://localhost:5432/tg";
+//            String username = "postgres";
+//            String password = "vini930716";
+            URI dbUri = new URI(System.getenv("DATABASE_URL"));
+            String username = dbUri.getUserInfo().split(":")[0];
+            String password = dbUri.getUserInfo().split(":")[1];
+            String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+            
             String myDataField = null;
             String datainicial = request.getParameter("data_inicial");
             String datafinal = request.getParameter("data_final");
-            String todoperiodo = request.getParameter("allperiodobox");
+            //String todoperiodo = request.getParameter("allperiodobox");
             String myQuery = "";
             String[] aux1 = request.getParameterValues("cotacaobox");
             ArrayList<String> cotacao = new ArrayList<String>();
@@ -90,14 +96,14 @@
                     }
                 }
                 myQuery = myQuery + ")";
-                if (!datainicial.isEmpty() && !datafinal.isEmpty() && !todoperiodo.equals("tudo")) {
+                if (!datainicial.isEmpty() && !datafinal.isEmpty()) {
                     myQuery = myQuery + "AND datacorrente BETWEEN '" + datainicial + "' AND '" + datafinal + "'";
                 }
                 Connection myConnection = null;
                 PreparedStatement myPreparedStatement = null;
                 ResultSet myResultSet = null;
                 Class.forName(driver).newInstance();
-                myConnection = DriverManager.getConnection(url, username, password);
+                myConnection = DriverManager.getConnection(dbUrl, username, password);
                 myPreparedStatement = myConnection.prepareStatement(myQuery);
                 myResultSet = myPreparedStatement.executeQuery();
                 response.setContentType("text/csv");
